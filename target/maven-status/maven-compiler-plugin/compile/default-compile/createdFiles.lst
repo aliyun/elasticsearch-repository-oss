@@ -1,0 +1,7 @@
+org/elasticsearch/aliyun/oss/blobstore/OssBlobStore.class
+org/elasticsearch/plugin/repository/oss/OssRepositoryPlugin.class
+org/elasticsearch/aliyun/oss/service/OssService.class
+org/elasticsearch/aliyun/oss/service/OssServiceImpl.class
+org/elasticsearch/aliyun/oss/service/OssClientSettings.class
+org/elasticsearch/repository/oss/OssRepository.class
+org/elasticsearch/aliyun/oss/blobstore/OssBlobContainer.class
