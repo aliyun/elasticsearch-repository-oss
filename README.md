@@ -6,7 +6,7 @@
 
 ## 创建仓库
 ```
-PUT _snapshot/my_backup <1>
+PUT _snapshot/my_backup 
 {
     "type": "oss",
     "settings": {
@@ -31,6 +31,10 @@ POST _snapshot/my_backup/ <1>
 {
     "type": "oss",
     "settings": {
+        "endpoint": "http://oss-cn-hangzhou-internal.aliyuncs.com", 
+        "access_key_id": "xxxx", 
+        "secret_access_key": "xxxxxx", 
+        "bucket": "xxxxxx", 
         "chunk_size": "500mb",
         "base_path": "snapshot/" <2>
     }
@@ -70,7 +74,8 @@ PUT _snapshot/my_backup/snapshot_1?wait_for_completion=true
 
 这个会阻塞调用直到快照完成。注意大型快照会花很长时间才返回。
 
-==================================================
+
+
 
 ### 快照指定索引
 
@@ -288,7 +293,7 @@ POST /_snapshot/my_backup/snapshot_1/_restore
 POST _snapshot/my_backup/snapshot_1/_restore?wait_for_completion=true
 ```
 
-==================================================
+
 
 
 ### 监控恢复操作
