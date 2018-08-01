@@ -3,7 +3,7 @@ package org.elasticsearch.aliyun.oss.blobstore;
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.*;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.SpecialPermission;
 import org.elasticsearch.aliyun.oss.service.OssService;
 import org.elasticsearch.common.blobstore.*;

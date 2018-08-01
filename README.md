@@ -6,6 +6,23 @@
 * [OSS快照迁移文档](https://github.com/zhichen/elasticsearch-repository-oss/wiki/OSS快照迁移)
 
 
+## 安装插件
+
+### 安装插件
+```bash
+$ bin/elasticsearch-plugin install https://github.com/anjia0532/elasticsearch-repository-oss/releases/download/6.3.1/elasticsearch-repository-oss-6.3.1.zip
+```
+
+### 修改es的log4j2配置文件,追加以下两行
+```properties
+logger.com_aliyun.name = com.aliyun.oss
+logger.com_aliyun.level = warn
+```
+### 修改es config目录下的jvm.options文件，最后一行添加
+```properties
+-Djava.security.policy=../plugins/elasticsearch-repository-oss/plugin-security.policy
+```
+
 ## 创建仓库
 ```
 PUT _snapshot/my_backup 
@@ -43,8 +60,8 @@ POST _snapshot/my_backup/ <1>
 }
 ```
 * <1> 注意我们用的是 `POST` 而不是 `PUT` 。这会更新已有仓库的设置。
-* <2> base_path 设置仓库的起始位置默认为根目录
-
+* <2> base_path 设置仓库的起始位置默认为根目录，注意不能包含特殊字符，比如 `\ < > | * ? : `等
+ 
 ## 列出仓库信息
 ```
 GET _snapshot

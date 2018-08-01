@@ -2,7 +2,7 @@ package org.elasticsearch.aliyun.oss.blobstore;
 
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSSException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.common.blobstore.BlobContainer;
 import org.elasticsearch.common.blobstore.BlobMetaData;

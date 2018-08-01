@@ -1,6 +1,6 @@
 package org.elasticsearch.repository.oss;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.aliyun.oss.blobstore.MockOssService;
 import org.elasticsearch.aliyun.oss.service.OssClientSettings;
 import org.elasticsearch.aliyun.oss.service.OssService;

@@ -1,5 +1,6 @@
 package org.elasticsearch.repository.oss;
 
+import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.aliyun.oss.blobstore.OssBlobStore;
 import org.elasticsearch.aliyun.oss.service.OssClientSettings;
 import org.elasticsearch.aliyun.oss.service.OssService;
@@ -35,8 +36,11 @@ public class OssRepository extends BlobStoreRepository {
         String bucket = getSetting(OssClientSettings.BUCKET, metadata);
         String basePath = OssClientSettings.BASE_PATH.get(metadata.settings());
         if (Strings.hasLength(basePath)) {
+            if (StringUtils.containsAny(basePath, "\\",":","*","?","\"","<",">","|")){
+                throw new IllegalArgumentException("base path has invalid char,check please.(\\ : * ? \" < > | )");
+            }
             BlobPath path = new BlobPath();
-            for (String elem : basePath.split(File.separator)) {
+            for (String elem : StringUtils.splitPreserveAllTokens(basePath,"/")) {
                 path = path.add(elem);
             }
             this.basePath = path;

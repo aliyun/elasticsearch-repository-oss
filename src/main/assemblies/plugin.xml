@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <assembly>
-    <id>plugin</id>
+    <id>elasticsearch-repository-oss</id>
     <formats>
         <format>zip</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
     <dependencySets>
         <dependencySet>
-            <outputDirectory>/elasticsearch-repository-oss</outputDirectory>
+            <outputDirectory/>
             <useProjectArtifact>true</useProjectArtifact>
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <excludes>
@@ -18,7 +18,7 @@
     <fileSets>
         <fileSet>
             <directory>src/main/resources</directory>
-            <outputDirectory>/elasticsearch-repository-oss</outputDirectory>
+            <outputDirectory/>
             <includes>
                 <include>plugin-security.policy</include>
                 <include>plugin-descriptor.properties</include>
