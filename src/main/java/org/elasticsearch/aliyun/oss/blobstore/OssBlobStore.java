@@ -31,12 +31,16 @@ public class OssBlobStore extends AbstractComponent implements BlobStore {
     private final OssService client;
     private final String bucket;
 
-    public OssBlobStore(Settings settings, String bucket, OssService client) {
+    public OssBlobStore(Settings settings, String bucket, OssService client){
         super(settings);
         this.client = client;
         this.bucket = bucket;
-        if (!doesBucketExist(bucket)) {
-            throw new BlobStoreException("Bucket [" + bucket + "] does not exist");
+        try {
+            if (!doesBucketExist(bucket)) {
+                throw new BlobStoreException("Bucket [" + bucket + "] does not exist");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -79,8 +83,8 @@ public class OssBlobStore extends AbstractComponent implements BlobStore {
      * @param bucketName name of the bucket
      * @return true if the bucket exists, false otherwise
      */
-    boolean doesBucketExist(String bucketName) {
-        return this.client.doesBucketExist(bucketName);
+    boolean doesBucketExist(String bucketName) throws IOException{
+        return doPrivileged(() -> this.client.doesBucketExist(bucketName));
     }
 
 

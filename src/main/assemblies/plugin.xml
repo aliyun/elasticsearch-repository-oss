@@ -20,18 +20,12 @@
             <directory>src/main/resources</directory>
             <outputDirectory/>
             <includes>
-                <include>plugin-security.policy</include>
-                <include>plugin-descriptor.properties</include>
                 <include>log4j2.properties</include>
                 <include>log4j.xml</include>
+                <include>plugin-descriptor.properties</include>
+                <include>plugin-security.policy</include>
             </includes>
-        </fileSet>
-        <fileSet>
-            <directory>lib</directory>
-            <outputDirectory>/elasticsearch</outputDirectory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
+            <filtered>true</filtered>
         </fileSet>
     </fileSets>
 </assembly>

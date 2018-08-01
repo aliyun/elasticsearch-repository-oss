@@ -41,6 +41,7 @@ public class OssRepository extends BlobStoreRepository {
             }
             BlobPath path = new BlobPath();
             for (String elem : StringUtils.splitPreserveAllTokens(basePath,"/")) {
+                if (StringUtils.isBlank(elem)) continue;
                 path = path.add(elem);
             }
             this.basePath = path;

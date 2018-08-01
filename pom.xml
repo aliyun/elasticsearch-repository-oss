@@ -6,7 +6,7 @@
 
     <groupId>com.opensearch.es</groupId>
     <artifactId>elasticsearch-repository-oss</artifactId>
-    <version>6.3.1</version>
+    <version>${elasticsearch.version}</version>
 
 
     <properties>
@@ -16,16 +16,30 @@
         <elasticsearch.assembly.descriptor>${project.basedir}/src/main/assemblies/plugin.xml
         </elasticsearch.assembly.descriptor>
         <elasticsearch.plugin.name>elasticsearch-repository-oss</elasticsearch.plugin.name>
-        <elasticsearch.plugin.classname>
-            org.elasticsearch.plugin.repository.oss.OssRepositoryPlugin
-        </elasticsearch.plugin.classname>
+        <elasticsearch.plugin.classname>org.elasticsearch.plugin.repository.oss.OssRepositoryPlugin</elasticsearch.plugin.classname>
         <elasticsearch.plugin.jvm>true</elasticsearch.plugin.jvm>
         <elasticsearch.plugin.isolated>true</elasticsearch.plugin.isolated>
         <tests.rest.load_packaged>false</tests.rest.load_packaged>
         <skip.unit.tests>true</skip.unit.tests>
         <gpg.keyname>4E899B30</gpg.keyname>
         <gpg.useagent>true</gpg.useagent>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>AnJia</name>
+            <email>anjia0532@gmail.com</email>
+            <organization>shunneng inc. </organization>
+            <organizationUrl>https://www.shunnengnet.com</organizationUrl>
+        </developer>
+    </developers>
     <dependencies>
         <dependency>
             <groupId>org.elasticsearch</groupId>
@@ -121,8 +135,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${maven.compiler.target}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
             <plugin>
