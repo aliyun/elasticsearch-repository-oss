@@ -10,7 +10,7 @@
 
 
     <properties>
-        <elasticsearch.version>6.3.1</elasticsearch.version>
+        <elasticsearch.version>6.3.2</elasticsearch.version>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.description>elasticsearch-repository-oss</project.description>
         <elasticsearch.assembly.descriptor>${project.basedir}/src/main/assemblies/plugin.xml
