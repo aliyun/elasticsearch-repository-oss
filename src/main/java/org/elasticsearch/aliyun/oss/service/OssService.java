@@ -1,11 +1,20 @@
 package org.elasticsearch.aliyun.oss.service;
 
-import com.aliyun.oss.ClientException;
-import com.aliyun.oss.OSSException;
-import com.aliyun.oss.model.*;
-
 import java.io.IOException;
 import java.io.InputStream;
+
+import com.aliyun.oss.ClientException;
+import com.aliyun.oss.OSSException;
+import com.aliyun.oss.model.Bucket;
+import com.aliyun.oss.model.CopyObjectResult;
+import com.aliyun.oss.model.DeleteObjectsRequest;
+import com.aliyun.oss.model.DeleteObjectsResult;
+import com.aliyun.oss.model.ListObjectsRequest;
+import com.aliyun.oss.model.OSSObject;
+import com.aliyun.oss.model.ObjectListing;
+import com.aliyun.oss.model.ObjectMetadata;
+import com.aliyun.oss.model.PutObjectResult;
+import org.elasticsearch.aliyun.oss.service.exception.CreateStsOssClientException;
 
 /**
  * OSS Service interface for creating oss client.
@@ -30,7 +39,6 @@ public interface OssService {
      * @return {@code true} if a blob exists with the given name, and {@code false} otherwise.
      */
     boolean doesObjectExist(String bucketName, String key) throws OSSException, ClientException;
-
 
     /**
      * Determines if a given {@link Bucket} exists.
@@ -103,4 +111,15 @@ public interface OssService {
      * Once closed, no requests to the OSS will be processed anymore.
      */
     void shutdown();
+
+    /**
+     * refresh StsOssClient instance which construct via sts-accessKeyId, sts-accessKeySecret, sts-securityToken
+     * Once refreshed, sts-securityToken is valid.
+     */
+    void refreshStsOssClient() throws CreateStsOssClientException;
+
+    /**
+     * judge if use Sts OssClient
+     */
+    boolean isUseStsOssClient();
 }

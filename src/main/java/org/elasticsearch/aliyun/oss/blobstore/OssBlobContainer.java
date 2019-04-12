@@ -1,5 +1,11 @@
 package org.elasticsearch.aliyun.oss.blobstore;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.NoSuchFileException;
+import java.util.Map;
+
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSSException;
 import org.apache.commons.lang.StringUtils;
@@ -10,12 +16,6 @@ import org.elasticsearch.common.blobstore.BlobPath;
 import org.elasticsearch.common.blobstore.BlobStoreException;
 import org.elasticsearch.common.blobstore.support.AbstractBlobContainer;
 import org.elasticsearch.common.logging.Loggers;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.NoSuchFileException;
-import java.util.Map;
 
 /**
  * A class for managing a oss repository of blob entries, where each blob entry is just a named group of bytes
@@ -38,13 +38,13 @@ public class OssBlobContainer extends AbstractBlobContainer {
      * @param blobName The name of the blob whose existence is to be determined.
      * @return {@code true} if a blob exists in the BlobContainer with the given name, and {@code false} otherwise.
      */
-    @Override public boolean blobExists(String blobName) {
+    @Override
+    public boolean blobExists(String blobName) {
         logger.trace("blobExists({})", blobName);
         try {
             return blobStore.blobExists(buildKey(blobName));
         } catch (OSSException | ClientException | IOException e) {
-            logger.warn("can not access [{}] in bucket {{}}: {}", blobName, blobStore.getBucket(),
-                e.getMessage());
+            logger.warn("can not access [{}] : {}", blobName, e.getMessage());
             throw new BlobStoreException("Failed to check if blob [" + blobName + "] exists", e);
         }
     }
@@ -55,16 +55,16 @@ public class OssBlobContainer extends AbstractBlobContainer {
      * @param blobName The name of the blob to get an {@link InputStream} for.
      * @return The {@code InputStream} to read the blob.
      * @throws NoSuchFileException if the blob does not exist
-     * @throws IOException         if the blob can not be read.
+     * @throws IOException if the blob can not be read.
      */
-    @Override public InputStream readBlob(String blobName) throws IOException {
+    @Override
+    public InputStream readBlob(String blobName) throws IOException {
         logger.trace("readBlob({})", blobName);
         if (!blobExists(blobName)) {
             throw new NoSuchFileException("[" + blobName + "] blob not found");
         }
         return blobStore.readBlob(buildKey(blobName));
     }
-
 
     /**
      * Reads blob content from the input stream and writes it to the container in a new blob with the given name.
@@ -76,9 +76,10 @@ public class OssBlobContainer extends AbstractBlobContainer {
      * @param blobSize    The size of the blob to be written, in bytes.  It is implementation dependent whether
      *                    this value is used in writing the blob to the repository.
      * @throws FileAlreadyExistsException if a blob by the same name already exists
-     * @throws IOException                if the input stream could not be read, or the target blob could not be written to.
+     * @throws IOException if the input stream could not be read, or the target blob could not be written to.
      */
-    @Override public void writeBlob(String blobName, InputStream inputStream, long blobSize)
+    @Override
+    public void writeBlob(String blobName, InputStream inputStream, long blobSize)
         throws IOException {
         if (blobExists(blobName)) {
             throw new FileAlreadyExistsException(
@@ -88,16 +89,16 @@ public class OssBlobContainer extends AbstractBlobContainer {
         blobStore.writeBlob(buildKey(blobName), inputStream, blobSize);
     }
 
-
-
     /**
-     * Deletes a blob with giving name, if the blob exists.  If the blob does not exist, this method throws an IOException.
+     * Deletes a blob with giving name, if the blob exists.  If the blob does not exist, this method throws an
+     * IOException.
      *
      * @param blobName The name of the blob to delete.
      * @throws NoSuchFileException if the blob does not exist
-     * @throws IOException         if the blob exists but could not be deleted.
+     * @throws IOException if the blob exists but could not be deleted.
      */
-    @Override public void deleteBlob(String blobName) throws IOException {
+    @Override
+    public void deleteBlob(String blobName) throws IOException {
         logger.trace("deleteBlob({})", blobName);
         if (!blobExists(blobName)) {
             throw new NoSuchFileException("Blob [" + blobName + "] does not exist");
@@ -105,7 +106,7 @@ public class OssBlobContainer extends AbstractBlobContainer {
         try {
             blobStore.deleteBlob(buildKey(blobName));
         } catch (OSSException | ClientException e) {
-            logger.warn("can not access [{}] in bucket {{}}: {}", blobName, blobStore.getBucket(),
+            logger.warn("can not access [{}] : {}", blobName,
                 e.getMessage());
             throw new IOException(e);
         }
@@ -119,7 +120,8 @@ public class OssBlobContainer extends AbstractBlobContainer {
      * the values are {@link BlobMetaData}, containing basic information about each blob.
      * @throws IOException if there were any failures in reading from the blob container.
      */
-    @Override public Map<String, BlobMetaData> listBlobs() throws IOException {
+    @Override
+    public Map<String, BlobMetaData> listBlobs() throws IOException {
         return listBlobsByPrefix(null);
     }
 
@@ -130,14 +132,14 @@ public class OssBlobContainer extends AbstractBlobContainer {
      * the values are {@link BlobMetaData}, containing basic information about each blob.
      * @throws IOException if there were any failures in reading from the blob container.
      */
-    @Override public Map<String, BlobMetaData> listBlobsByPrefix(String blobNamePrefix)
+    @Override
+    public Map<String, BlobMetaData> listBlobsByPrefix(String blobNamePrefix)
         throws IOException {
         logger.trace("listBlobsByPrefix({})", blobNamePrefix);
         try {
             return blobStore.listBlobsByPrefix(keyPath, blobNamePrefix);
         } catch (IOException e) {
-            logger.warn("can not access [{}] in bucket {{}}: {}", blobNamePrefix,
-                blobStore.getBucket(), e.getMessage());
+            logger.warn("can not access [{}] : {}", blobNamePrefix, e.getMessage());
             throw new IOException(e);
         }
     }
@@ -152,9 +154,10 @@ public class OssBlobContainer extends AbstractBlobContainer {
      * @param sourceBlobName The blob to rename.
      * @param targetBlobName The name of the blob after the renaming.
      * @throws IOException if the source blob does not exist, the target blob already exists,
-     *                     or there were any failures in reading from the blob container.
+     * or there were any failures in reading from the blob container.
      */
-    @Override public void move(String sourceBlobName, String targetBlobName) throws IOException {
+    @Override
+    public void move(String sourceBlobName, String targetBlobName) throws IOException {
         logger.trace("move({}, {})", sourceBlobName, targetBlobName);
         if (!blobExists(sourceBlobName)) {
             throw new IOException("Blob [" + sourceBlobName + "] does not exist");
@@ -164,8 +167,8 @@ public class OssBlobContainer extends AbstractBlobContainer {
         try {
             blobStore.move(buildKey(sourceBlobName), buildKey(targetBlobName));
         } catch (OSSException | ClientException | NoSuchFileException e) {
-            logger.warn("can not move blob [{}] to [{}] in bucket {{}}: {}", sourceBlobName,
-                targetBlobName, blobStore.getBucket(), e.getMessage());
+            logger.warn("can not move blob [{}] to [{}] : {}", sourceBlobName,
+                targetBlobName, e.getMessage());
             throw new IOException(e);
         }
     }

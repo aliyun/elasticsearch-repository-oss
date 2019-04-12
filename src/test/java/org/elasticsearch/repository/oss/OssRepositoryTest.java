@@ -1,5 +1,8 @@
 package org.elasticsearch.repository.oss;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.aliyun.oss.blobstore.MockOssService;
 import org.elasticsearch.aliyun.oss.service.OssClientSettings;
@@ -11,9 +14,6 @@ import org.elasticsearch.plugin.repository.oss.OssRepositoryPlugin;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.repositories.blobstore.ESBlobStoreRepositoryIntegTestCase;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import static org.elasticsearch.test.hamcrest.ElasticsearchAssertions.assertAcked;
 
 /**
@@ -23,13 +23,13 @@ public class OssRepositoryTest extends ESBlobStoreRepositoryIntegTestCase {
     private static final String BUCKET = "oss-repository-test";
     private static final OssService client = new MockOssService();
 
-
-
-    @Override protected Collection<Class<? extends Plugin>> nodePlugins() {
+    @Override
+    protected Collection<Class<? extends Plugin>> nodePlugins() {
         return Arrays.asList(MockOssRepositoryPlugin.class);
     }
 
-    @Override protected void createTestRepository(String name) {
+    @Override
+    protected void createTestRepository(String name) {
         assertAcked(
             client().admin().cluster().preparePutRepository(name).setType(OssRepository.TYPE)
                 .setSettings(Settings.builder().put(OssClientSettings.BUCKET.getKey(), BUCKET)
@@ -42,15 +42,11 @@ public class OssRepositoryTest extends ESBlobStoreRepositoryIntegTestCase {
                         ByteSizeUnit.MB)));
     }
 
-
-
     public static class MockOssRepositoryPlugin extends OssRepositoryPlugin {
         @Override
         protected OssService createStorageService(Settings settings, RepositoryMetaData metadata) {
             return client;
         }
     }
-
-
 
 }
