@@ -24,7 +24,6 @@ import org.elasticsearch.aliyun.oss.service.exception.CreateStsOssClientExceptio
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.component.AbstractComponent;
 import org.elasticsearch.common.io.Streams;
-import org.elasticsearch.common.settings.Settings;
 
 /**
  * Created by yangkongshi on 2017/11/28.
@@ -34,7 +33,7 @@ public class MockOssService extends AbstractComponent implements OssService {
     protected final Map<String, OSSObject> blobs = new ConcurrentHashMap<>();
 
     public MockOssService() {
-        super(Settings.EMPTY);
+        super();
     }
 
     @Override

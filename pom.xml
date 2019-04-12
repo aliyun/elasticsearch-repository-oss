@@ -6,12 +6,12 @@
 
     <groupId>com.opensearch.es</groupId>
     <artifactId>elasticsearch-repository-oss</artifactId>
-    <version>6.3.2</version>
+    <version>6.7.0</version>
 
 
     <properties>
-        <elasticsearch.version>6.3.2</elasticsearch.version>
-        <lucene.version>7.3.1</lucene.version>
+        <elasticsearch.version>6.7.0</elasticsearch.version>
+        <lucene.version>7.7.0</lucene.version>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.description>elasticsearch-repository-oss</project.description>
         <elasticsearch.assembly.descriptor>${project.basedir}/src/main/assemblies/plugin.xml
@@ -124,15 +124,21 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>2.18.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
-            <version>1.7.0RC2</version>
+            <artifactId>powermock-api-mockito2</artifactId>
+            <version>2.0.0-beta.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
-            <version>1.7.0RC2</version>
+            <version>2.0.0-beta.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>

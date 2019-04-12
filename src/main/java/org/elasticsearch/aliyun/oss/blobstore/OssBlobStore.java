@@ -24,21 +24,18 @@ import org.elasticsearch.common.blobstore.BlobStore;
 import org.elasticsearch.common.blobstore.BlobStoreException;
 import org.elasticsearch.common.blobstore.support.PlainBlobMetaData;
 import org.elasticsearch.common.collect.MapBuilder;
-import org.elasticsearch.common.component.AbstractComponent;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.utils.PermissionHelper;
 
 /**
  * An oss blob store for managing oss client write and read blob directly
  * Created by yangkongshi on 2017/11/24.
  */
-public class OssBlobStore extends AbstractComponent implements BlobStore {
+public class OssBlobStore implements BlobStore {
 
     private final OssService client;
     private final String bucket;
 
-    public OssBlobStore(Settings settings, String bucket, OssService client) {
-        super(settings);
+    public OssBlobStore(String bucket, OssService client) {
         this.client = client;
         this.bucket = bucket;
         if (!doesBucketExist(bucket)) {

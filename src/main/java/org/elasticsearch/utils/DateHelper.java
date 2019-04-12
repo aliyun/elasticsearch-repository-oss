@@ -5,15 +5,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.common.logging.Loggers;
 
 /**
  * @author hanqing.zhq@alibaba-inc.com
  * @date 2018/4/16
  */
 public class DateHelper {
-    private static final Logger logger = Loggers.getLogger(DateHelper.class);
+    private static final Logger logger = LogManager.getLogger(DateHelper.class);
 
     public static Date convertStringToDate(String dateString) {
         String dateRegex = "yyyy-MM-dd'T'HH:mm:ss'Z'";

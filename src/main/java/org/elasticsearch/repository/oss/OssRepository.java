@@ -3,6 +3,9 @@ package org.elasticsearch.repository.oss;
 import java.io.File;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.elasticsearch.aliyun.oss.blobstore.OssBlobContainer;
 import org.elasticsearch.aliyun.oss.blobstore.OssBlobStore;
 import org.elasticsearch.aliyun.oss.service.OssClientSettings;
 import org.elasticsearch.aliyun.oss.service.OssService;
@@ -24,21 +27,25 @@ import org.elasticsearch.repositories.blobstore.BlobStoreRepository;
  * Created by yangkongshi on 2017/11/24.
  */
 public class OssRepository extends BlobStoreRepository {
+
+    private static final Logger logger = LogManager.getLogger(OssBlobContainer.class);
+
     public static final String TYPE = "oss";
-    private final OssBlobStore blobStore;
     private final BlobPath basePath;
     private final boolean compress;
     private final ByteSizeValue chunkSize;
+    private final String bucket;
+    private final OssService ossService;
 
     public OssRepository(RepositoryMetaData metadata, Environment env,
         NamedXContentRegistry namedXContentRegistry, OssService ossService) {
         super(metadata, env.settings(), namedXContentRegistry);
+        this.ossService = ossService;
         String ecsRamRole = OssClientSettings.ECS_RAM_ROLE.get(metadata.settings()).toString();
-        String bucket;
         if (StringUtils.isNotEmpty(ecsRamRole)) {
-            bucket = getSetting(OssClientSettings.AUTO_SNAPSHOT_BUCKET, metadata).toString();
+            this.bucket = getSetting(OssClientSettings.AUTO_SNAPSHOT_BUCKET, metadata).toString();
         } else {
-            bucket = getSetting(OssClientSettings.BUCKET, metadata);
+            this.bucket = getSetting(OssClientSettings.BUCKET, metadata);
         }
         String basePath = OssClientSettings.BASE_PATH.get(metadata.settings());
         if (Strings.hasLength(basePath)) {
@@ -52,19 +59,18 @@ public class OssRepository extends BlobStoreRepository {
         }
         this.compress = getSetting(OssClientSettings.COMPRESS, metadata);
         this.chunkSize = getSetting(OssClientSettings.CHUNK_SIZE, metadata);
-        logger.info("using base_path [{}], chunk_size [{}], compress [{}]",
+        logger.info("Using base_path [{}], chunk_size [{}], compress [{}]",
             basePath, chunkSize, compress);
-        blobStore = new OssBlobStore(env.settings(), bucket, ossService);
     }
 
     @Override
-    protected BlobStore blobStore() {
-        return this.blobStore;
+    protected BlobStore createBlobStore() throws Exception {
+        return new OssBlobStore(bucket, ossService);
     }
 
     @Override
     protected BlobPath basePath() {
-        return this.basePath;
+        return basePath;
     }
 
     @Override
@@ -88,5 +94,10 @@ public class OssRepository extends BlobStoreRepository {
                 "Setting [" + setting.getKey() + "] is empty for repository");
         }
         return value;
+    }
+
+    /** mainly for test **/
+    public OssService getOssService() {
+        return ossService;
     }
 }

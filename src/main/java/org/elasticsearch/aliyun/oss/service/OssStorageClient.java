@@ -9,6 +9,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import com.aliyun.oss.ClientConfiguration;
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.OSSException;
@@ -22,10 +23,11 @@ import com.aliyun.oss.model.ObjectMetadata;
 import com.aliyun.oss.model.PutObjectResult;
 import okhttp3.Response;
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.aliyun.oss.blobstore.OssBlobContainer;
 import org.elasticsearch.aliyun.oss.service.exception.CreateStsOssClientException;
 import org.elasticsearch.cluster.metadata.RepositoryMetaData;
-import org.elasticsearch.common.logging.Loggers;
 import org.elasticsearch.common.settings.SecureString;
 import org.elasticsearch.repository.oss.OssRepository;
 import org.elasticsearch.utils.DateHelper;
@@ -38,7 +40,7 @@ import static java.lang.Thread.sleep;
  * @date 2018/6/26
  */
 public class OssStorageClient {
-    private final Logger logger = Loggers.getLogger(OssStorageClient.class);
+    private static final Logger logger = LogManager.getLogger(OssBlobContainer.class);
 
     private RepositoryMetaData metadata;
     private OSSClient client;
@@ -265,13 +267,20 @@ public class OssStorageClient {
         return client;
     }
 
+    private ClientConfiguration extractClientConfiguration(RepositoryMetaData repositoryMetaData) {
+        ClientConfiguration configuration = new ClientConfiguration();
+        configuration.setSupportCname(OssRepository.getSetting(OssClientSettings.SUPPORT_CNAME, repositoryMetaData));
+        return configuration;
+    }
+
     private OSSClient createAKOssClient(RepositoryMetaData repositoryMetaData) {
         SecureString accessKeyId =
             OssRepository.getSetting(OssClientSettings.ACCESS_KEY_ID, repositoryMetaData);
         SecureString secretAccessKey =
             OssRepository.getSetting(OssClientSettings.SECRET_ACCESS_KEY, repositoryMetaData);
         String endpoint = OssRepository.getSetting(OssClientSettings.ENDPOINT, repositoryMetaData);
-        return new OSSClient(endpoint, accessKeyId.toString(), secretAccessKey.toString());
+        return new OSSClient(endpoint, accessKeyId.toString(), secretAccessKey.toString(),
+            extractClientConfiguration(repositoryMetaData));
     }
 
     private OSSClient createAKStsTokenClient(RepositoryMetaData repositoryMetaData) {
@@ -282,7 +291,7 @@ public class OssStorageClient {
             OssRepository.getSetting(OssClientSettings.SECRET_ACCESS_KEY, repositoryMetaData);
         String endpoint = OssRepository.getSetting(OssClientSettings.ENDPOINT, repositoryMetaData);
         return new OSSClient(endpoint, accessKeyId.toString(), secretAccessKey.toString(),
-            securityToken.toString());
+            securityToken.toString(), extractClientConfiguration(repositoryMetaData));
     }
 
     private synchronized OSSClient createStsOssClient(RepositoryMetaData repositoryMetaData)
@@ -311,7 +320,8 @@ public class OssStorageClient {
                     if (null != this.client) {
                         this.client.shutdown();
                     }
-                    this.client = new OSSClient(endpoint, accessKeyId, accessKeySecret, securityToken);
+                    this.client = new OSSClient(endpoint, accessKeyId, accessKeySecret, securityToken,
+                        extractClientConfiguration(repositoryMetaData));
                 } finally {
                     readWriteLock.writeLock().unlock();
                 }

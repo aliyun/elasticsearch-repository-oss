@@ -14,19 +14,16 @@ import com.aliyun.oss.model.ObjectMetadata;
 import com.aliyun.oss.model.PutObjectResult;
 import org.elasticsearch.aliyun.oss.service.exception.CreateStsOssClientException;
 import org.elasticsearch.cluster.metadata.RepositoryMetaData;
-import org.elasticsearch.common.component.AbstractComponent;
-import org.elasticsearch.common.settings.Settings;
 
 /**
  * OSS Service implementation for creating oss client
  * Created by yangkongshi on 2017/11/24.
  */
-public class OssServiceImpl extends AbstractComponent implements OssService {
+public class OssServiceImpl implements OssService {
 
     private OssStorageClient ossStorageClient;
 
-    public OssServiceImpl(Settings settings, RepositoryMetaData metadata) throws CreateStsOssClientException {
-        super(settings);
+    public OssServiceImpl(RepositoryMetaData metadata) throws CreateStsOssClientException {
         this.ossStorageClient = new OssStorageClient(metadata);
     }
 

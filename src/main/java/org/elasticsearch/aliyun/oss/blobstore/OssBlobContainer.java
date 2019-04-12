@@ -9,20 +9,18 @@ import java.util.Map;
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSSException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.elasticsearch.common.blobstore.BlobContainer;
 import org.elasticsearch.common.blobstore.BlobMetaData;
 import org.elasticsearch.common.blobstore.BlobPath;
 import org.elasticsearch.common.blobstore.BlobStoreException;
 import org.elasticsearch.common.blobstore.support.AbstractBlobContainer;
-import org.elasticsearch.common.logging.Loggers;
-
 /**
  * A class for managing a oss repository of blob entries, where each blob entry is just a named group of bytes
  * Created by yangkongshi on 2017/11/24.
  */
 public class OssBlobContainer extends AbstractBlobContainer {
-    protected final Logger logger = Loggers.getLogger(OssBlobContainer.class);
+    private static final Logger logger = LogManager.getLogger(OssBlobContainer.class);
     protected final OssBlobStore blobStore;
     protected final String keyPath;
 
@@ -71,19 +69,24 @@ public class OssBlobContainer extends AbstractBlobContainer {
      * This method assumes the container does not already contain a blob of the same blobName.  If a blob by the
      * same name already exists, the operation will fail and an {@link IOException} will be thrown.
      *
-     * @param blobName    The name of the blob to write the contents of the input stream to.
-     * @param inputStream The input stream from which to retrieve the bytes to write to the blob.
-     * @param blobSize    The size of the blob to be written, in bytes.  It is implementation dependent whether
-     *                    this value is used in writing the blob to the repository.
-     * @throws FileAlreadyExistsException if a blob by the same name already exists
+     * @param blobName            The name of the blob to write the contents of the input stream to.
+     * @param inputStream         The input stream from which to retrieve the bytes to write to the blob.
+     * @param blobSize            The size of the blob to be written, in bytes.  It is implementation dependent whether
+     *                            this value is used in writing the blob to the repository.
+     * @param failIfAlreadyExists whether to throw a FileAlreadyExistsException if the given blob already exists
+     * @throws FileAlreadyExistsException if failIfAlreadyExists is true and a blob by the same name already exists
      * @throws IOException if the input stream could not be read, or the target blob could not be written to.
      */
     @Override
-    public void writeBlob(String blobName, InputStream inputStream, long blobSize)
+    public void writeBlob(String blobName, InputStream inputStream, long blobSize, boolean failIfAlreadyExists)
         throws IOException {
         if (blobExists(blobName)) {
-            throw new FileAlreadyExistsException(
-                "blob [" + blobName + "] already exists, cannot overwrite");
+            if (failIfAlreadyExists) {
+                throw new FileAlreadyExistsException(
+                    "blob [" + blobName + "] already exists, cannot overwrite");
+            } else {
+                deleteBlobIgnoringIfNotExists(blobName);
+            }
         }
         logger.trace("writeBlob({}, stream, {})", blobName, blobSize);
         blobStore.writeBlob(buildKey(blobName), inputStream, blobSize);
@@ -140,35 +143,6 @@ public class OssBlobContainer extends AbstractBlobContainer {
             return blobStore.listBlobsByPrefix(keyPath, blobNamePrefix);
         } catch (IOException e) {
             logger.warn("can not access [{}] : {}", blobNamePrefix, e.getMessage());
-            throw new IOException(e);
-        }
-    }
-
-    /**
-     * Renames the source blob into the target blob.  If the source blob does not exist or the
-     * target blob already exists, an exception is thrown.  Atomicity of the move operation
-     * can only be guaranteed on an implementation-by-implementation basis.  The only current
-     * implementation of {@link BlobContainer} for which atomicity can be guaranteed is the
-     * {@link org.elasticsearch.common.blobstore.fs.FsBlobContainer}.
-     *
-     * @param sourceBlobName The blob to rename.
-     * @param targetBlobName The name of the blob after the renaming.
-     * @throws IOException if the source blob does not exist, the target blob already exists,
-     * or there were any failures in reading from the blob container.
-     */
-    @Override
-    public void move(String sourceBlobName, String targetBlobName) throws IOException {
-        logger.trace("move({}, {})", sourceBlobName, targetBlobName);
-        if (!blobExists(sourceBlobName)) {
-            throw new IOException("Blob [" + sourceBlobName + "] does not exist");
-        } else if (blobExists(targetBlobName)) {
-            throw new IOException("Blob [" + targetBlobName + "] has already exist");
-        }
-        try {
-            blobStore.move(buildKey(sourceBlobName), buildKey(targetBlobName));
-        } catch (OSSException | ClientException | NoSuchFileException e) {
-            logger.warn("can not move blob [{}] to [{}] : {}", sourceBlobName,
-                targetBlobName, e.getMessage());
             throw new IOException(e);
         }
     }

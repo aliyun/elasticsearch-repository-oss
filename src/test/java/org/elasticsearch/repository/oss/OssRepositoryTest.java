@@ -29,22 +29,23 @@ public class OssRepositoryTest extends ESBlobStoreRepositoryIntegTestCase {
     }
 
     @Override
-    protected void createTestRepository(String name) {
+    protected void createTestRepository(String name, boolean verify) {
         assertAcked(
-            client().admin().cluster().preparePutRepository(name).setType(OssRepository.TYPE)
+            client().admin().cluster().preparePutRepository(name).setType(OssRepository.TYPE).setVerify(verify)
                 .setSettings(Settings.builder().put(OssClientSettings.BUCKET.getKey(), BUCKET)
                     .put(OssClientSettings.BASE_PATH.getKey(), StringUtils.EMPTY)
                     .put(OssClientSettings.ACCESS_KEY_ID.getKey(), "test_access_key_id")
                     .put(OssClientSettings.SECRET_ACCESS_KEY.getKey(), "test_secret_access_key")
                     .put(OssClientSettings.ENDPOINT.getKey(), "test_endpoint")
                     .put(OssClientSettings.COMPRESS.getKey(), randomBoolean())
+                    .put(OssClientSettings.SUPPORT_CNAME.getKey(), randomBoolean())
                     .put(OssClientSettings.CHUNK_SIZE.getKey(), randomIntBetween(100, 1000),
                         ByteSizeUnit.MB)));
     }
 
     public static class MockOssRepositoryPlugin extends OssRepositoryPlugin {
         @Override
-        protected OssService createStorageService(Settings settings, RepositoryMetaData metadata) {
+        protected OssService createStorageService(RepositoryMetaData metadata) {
             return client;
         }
     }

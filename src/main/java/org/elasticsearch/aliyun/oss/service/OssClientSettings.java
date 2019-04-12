@@ -30,8 +30,6 @@ public class OssClientSettings {
     public static final Setting<SecureString> SECURITY_TOKEN =
         new Setting<>("security_token", StringUtils.EMPTY, SecureString::new, Property.Filtered,
             Property.Dynamic, Property.NodeScope);
-    //    public static final Setting<String> SECURITY_TOKEN = Setting
-    //        .simpleString("security_token", Setting.Property.NodeScope, Setting.Property.Dynamic);
     public static final Setting<String> BUCKET =
         simpleString("bucket", Setting.Property.NodeScope, Setting.Property.Dynamic);
     public static final Setting<String> BASE_PATH = simpleString("base_path", Setting.Property.NodeScope,
@@ -47,4 +45,6 @@ public class OssClientSettings {
     public static final Setting<SecureString> AUTO_SNAPSHOT_BUCKET =
         new Setting<>("auto_snapshot_bucket", StringUtils.EMPTY, SecureString::new, Property.Filtered,
             Property.Dynamic, Property.NodeScope);
+    public static final Setting<Boolean> SUPPORT_CNAME =
+        boolSetting("support_cname", true, Setting.Property.NodeScope, Setting.Property.Dynamic);
 }
