@@ -6,11 +6,11 @@
 
     <groupId>com.opensearch.es</groupId>
     <artifactId>elasticsearch-repository-oss</artifactId>
-    <version>5.5.3</version>
+    <version>5.6.13</version>
 
 
     <properties>
-        <elasticsearch.version>5.5.3</elasticsearch.version>
+        <elasticsearch.version>5.6.13</elasticsearch.version>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.description>elasticsearch-repository-oss</project.description>
         <elasticsearch.assembly.descriptor>${project.basedir}/src/main/assemblies/plugin.xml
